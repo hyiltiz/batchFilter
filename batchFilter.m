@@ -45,10 +45,16 @@ function stat = batchFilter(matfiles, varList, indexList, groupVar, batchFun, ou
                     {'train*'} % or 'train*' to process variables `train1`, `train2` etc. in all the data files
                     {'1'; 'eye()'} % process ALL the variables in the first mat file, and process the variable
                     that shares name with the second data file
-%		indexList
+%	indexList, groupVar
+        indexList specifies the target COLUMN(S) of the variables specified by varList
+        to be processed. This column(s) could also be further grouped using groupVar.
+        The indexed (indexList) column(s) in each variable (varList) will be
+        grouped based on the values of the column(s) specified by groupVar of that variable (varList).
+        Both indexList and groupVar are specified using the same rules. They can be:
         A single integer or an 1 x n array of integers that specifies the COLUMN indices
-        of each variables to be processed. Use m x n array of integers to respectively
-        specify the COLUMNS indices for each of the variables to be processed.
+        of each variables in varList to be (grouped and then) processed. Use m x n array of integers to respectively
+        specify the COLUMNS indices for each of the variables. m should be equal to
+        the number of variables in varList.
         Could also be a string that satisfies one of the folowing cases:
           1. 'T(rowIndex, n)'. This transposes the variable, and then uses the row
              index as the column index for the transposed variable.
@@ -60,21 +66,20 @@ function stat = batchFilter(matfiles, varList, indexList, groupVar, batchFun, ou
           5. 'file()' chooses the variable that shares the same name with the data
              file to be used.
           6. 'indexVarName' specifies the variable `indexVarName` in the data
-            file whose values are to be treated as the index array.
+            file whose values are to be treated as the index array (should be one dimentional vector) or the grouping
+            variables (should be m x n matrix where groups are divided based on 
+            the value of each column).
        Use cell strings of size m x 1 to specify respectively for each variable.
-       For example:
-%   groupVar
-        A single integer or an 1 x n array of integers specifying indices of columns which serves as group variables for values specified in the COLUMN indices
-        of each variables to be processed. The indexed (indexList) column(s) in each variable (varList) will be
-        grouped based on the values of the column(s) specified by groupVar of that variable (varList).
-        Since grouVar is also indices, it is specified similiarly
-        as indexList. In addition, groupVar could also be a single string specifying
-        a variable in the data file to be used as the group variable (in
-        comparison with specifying one or several column indices of the same
-        variable to be processed). All the columns of this group variable will
-        be used for grouping.
-        Use a cell string of size m x 1 to specify seperate group variables for
-        each data file respectively.
+       For example: 
+       % for all mat-files under ./data/, group Trials(:,4) based on Trials(:,[2 3]) and then
+       % return the mean for each group (6 groups in total)
+       batchFilter('data', 'Trials', 4, [2 3], 'mean');
+       
+       % for all mat-files under ./data/, group Trials(:,targetIndex) based on Trials(:,condition) and then
+       % return the mean for each group (6 groups in total)
+       batchFilter('data', 'Trials', 'targetIndex', 'condition', 'mean');
+       
+
 %		batchFun
 %		outFiles
 %   options
@@ -97,7 +102,7 @@ function stat = batchFilter(matfiles, varList, indexList, groupVar, batchFun, ou
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
+% (at your option) any lamamter version.
 %
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
