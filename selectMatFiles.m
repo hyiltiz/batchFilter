@@ -54,16 +54,18 @@ if exist('maFiles', 'var') ~= 1
     end
   end
 
-  if ischar(matFiles) % char: could be 1) dir, 2) glob, 3) regex
-    % decide is this is regexp
-    if ~isempty(regexp(matFiles, '^s/.*/$', 'once'))
-      % this could be regexp
-      if exist(matFiles, 'dir') == 7
-        % this could also be valid directory
-        warning('batchFilter:matFiles', ['Auto-selecting all mat files under `' matFiles '`\n'...
-          'Or did you mean a REGular EXpression by that!?'...
-          'If so, please rename that directory first.']);
-      else
+if ischar(matFiles) % char: could be 1) dir, 2) glob, 3) regex
+% decide if this is regexp
+if ~isempty(regexp(matFiles, '^s/.*/$', 'once')) & exist(matFiles, 'dir') == 7
+  % this could be regexp
+  % this could also be valid directory that looks like: s/abc/
+  status.isAmbiguousPatternOrDir = 1;
+  warning('batchFilter:matFiles', ['Auto-selecting all mat files under `' matFiles '`\n'...
+    'Or did you mean a REGular EXpression by that!?'...
+    'If so, please rename that directory first.']);
+else
+    % found no hilarious dir or no regexp at all!
+    if ~isempty(regexp(matFiles, '^s/.*/$', 'once')) 
         % this is a regexp
         status.isRegexp = 1;
         matFiles = matFiles(3:end-1); % strip out s//
@@ -73,7 +75,7 @@ if exist('maFiles', 'var') ~= 1
           matchstart = regexp(allFiles, matFiles);
           matFiles = allFiles(~cellfun(@isempty, matchstart));
         end
-      end
+      
 
     elseif ~isempty(regexp(matFiles, '\*', 'once'))
       % found a glob pattern
@@ -86,7 +88,11 @@ if exist('maFiles', 'var') ~= 1
       matFiles = regexprep(matFiles, '\\', '/'); % always use unix style path
       matFiles = regexprep(matFiles, '/*$', '/');
     end
-  end
+end
+% not char!
+end
+
+
 
 
   % parse them into the list format
