@@ -3,9 +3,35 @@ function stat = batchFilter(matfiles, batchFun, varList, indexList, outFiles)
 %
 % SYNOPSIS: stat = batchFilter(matfiles, batchFun, varList, indexList, outFiles)
 %
-% INPUT matfiles
+% INPUT
+% matFiles
+%       matFiles specifies the pathname of the data files to be opened as mat-files.
+%       The pathname could either be relative pathname to the current directory,
+%       or absolute pathname. When empty, batchFilter searches for mat-files with
+%       .mat suffix first under an ./data directory (if one exists under current
+%       directory), then under current directory.
+%       The data files could be specified with one of the following synatx:
+%         1. A directory string. In this case, all mat-files under this directory is
+%            processed.
+%            For example: 'exp1/data/' searches under exp1/data/
+%         2. A glob pattern string consisting one or more asterisks (*) sign which represents zero or more of any charachters. The glob
+%            pattern will be expanded by MATLAB's native ls command, which in turn,
+%            relies upon the `ls` or `dir` utilities in the operating system.
+%            For example: 'exp*/data/' searches through data under exp1, exp2 etc.
+%         3. A regular expressions patteen (regexp) string inside 's/<pattern>/'.
+%          If a regexp is provided, the pattern is matched against the relative full path under
+%            current directory. Setting options.isMatchFullPath to 0 can change
+%            this matching mode so that the pattern is matched against each file
+%            (e.g. 'a.mat') and folder names (e.g. 'exp1', 'data') instead of
+%            relative full path names (e.g. './exp1/data/a.mat'). The regexp matching
+%            is procecssed by MATLAB's native `regexp` command. see DOC REGEXP
+%            for more information.
+%            For example, 's/.*john.*\.mat/' searches for all .mat files whose name contains 'john'
+%         4. A list of cell strings where each elements of the cell string is a
+%            single mat-file to be treated as the data-file to be processed.
+%            For expmple: {'data/a.mat', 'data/b.mat'} processes all data files as mat-files.
 %		batchFun
-%		varList
+% 	varList
 %		indexList
 %		outFiles
 %
@@ -38,10 +64,41 @@ function stat = batchFilter(matfiles, batchFun, varList, indexList, outFiles)
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if nargin < 1
-    dir = 'AVRtoj6AV/';
+options.defaultDirs = {'./data/', './'}; % always include the last
+
+%% Input processing
+% select the mat files
+% NOTE: maybe simply using the path mechanism would be easier, but it introduces
+% potential bugs where unintended mat-files get processed.
+checkNextDir = 0;
+if exist('maFiles', 'var') ~= 1
+  % You really should have provided this! Be explicit!
+
+  for iDir = 1:options.defaultDirs
+    thisDir = options.defaultDirs{iDir};
+  if exist(thisDir, 'dir') ~= 7
+    if isempty(ls([thisDir] '*.mat']))
+      % Found no mat-file under data. Go search for current directory
+      checkNextDir = 1;
+    else
+      warning('batchFilter:matFiles', ['Auto-selecting all mat files under `' thisDir '`']);
+      matFiles = thisDir;
+    end
+  else
+    checkNextDir = 1;
+  end
 end
-files = cellstr(ls([dir '*.mat']));
+
+% parse them into the list format
+if iscellstr(matFiles)
+  % good!
+  matFilesList = matFiles; % treat AS IS
+elseif exist(matFiles, 'dir') == 7
+  matFilesList = cellstr(ls([matFiles '*.mat']));
+elseif exist(matFiles, 'file') == 2
+  matFilesList = {matFiles}; % this is a single mat file
+end
+nMatFiles = numel(matFilesList);
 
 
 getCenter = statFun('mean', 1); % or choose median
