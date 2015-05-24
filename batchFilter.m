@@ -1,4 +1,4 @@
-function stat = batchFilter(matfiles, batchFun, varList, indexList, outFiles)
+function stat = batchFilter(matfiles, varList, indexList, batchFun, outFiles, options)
 %BATCHFILTER applies batchFun as a filter to multiple mat-files then combines output into statistics-friendly tables.
 %
 % SYNOPSIS: stat = batchFilter(matfiles, batchFun, varList, indexList, outFiles)
@@ -30,10 +30,11 @@ function stat = batchFilter(matfiles, batchFun, varList, indexList, outFiles)
 %         4. A list of cell strings where each elements of the cell string is a
 %            single mat-file to be treated as the data-file to be processed.
 %            For expmple: {'data/a.mat', 'data/b.mat'} processes all data files as mat-files.
-%		batchFun
 % 	varList
 %		indexList
+%		batchFun
 %		outFiles
+%   options
 %
 % OUTPUT stat
 %
