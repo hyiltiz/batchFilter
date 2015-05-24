@@ -38,7 +38,7 @@ end
 checkNextDir = 0;
 if exist('maFiles', 'var') ~= 1
   % You really should have provided this! Be explicit!
-  
+
   for iDir = 1:options.defaultDirs
     thisDir = options.defaultDirs{iDir};
     if exist(thisDir, 'dir') ~= 7
@@ -53,7 +53,7 @@ if exist('maFiles', 'var') ~= 1
       checkNextDir = 1;
     end
   end
-  
+
   if ischar(matFiles) % char: could be 1) dir, 2) glob, 3) regex
     % decide is this is regexp
     if ~isempty(regexp(matFiles, '^s/.*/$', 'once'))
@@ -68,13 +68,13 @@ if exist('maFiles', 'var') ~= 1
         status.isRegexp = 1;
         matFiles = matFiles(3:end-1); % strip out s//
         allFiles = getAllFiles(regexStartDir, matFiles, options.isMatchFullPath);
-        
+
         if options.isMatchFullPath
           matchstart = regexp(allFiles, matFiles);
           matFiles = allFiles(~cellfun(@isempty, matchstart));
         end
       end
-      
+
     elseif ~isempty(regexp(matFiles, '\*', 'once'))
       % found a glob pattern
       status.isGlob = 1;
@@ -87,12 +87,12 @@ if exist('maFiles', 'var') ~= 1
       matFiles = regexprep(matFiles, '/*$', '/');
     end
   end
-  
-  
+
+
   % parse them into the list format
   if iscellstr(matFiles)
     % good!
-    matFilesList = matFiles; % treat AS IS
+    matFilesList = matFiles(:); % treat AS IS
   elseif exist(matFiles, 'dir') == 7
     matFilesList = cellstr(ls([matFiles '*' suffix]));
   elseif exist(matFiles, 'file') == 2
