@@ -66,52 +66,90 @@ function stat = batchFilter(matfiles, varList, indexList, batchFun, outFiles, op
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 options.defaultDirs = {'./data/', './'}; % always include the last
+options.defaultSuffix = {'.mat'}; % for now, only checks for the first element
+options.defaultRegexStartDir = '.';
 
 %% Input processing
 % select the mat files
 % NOTE: maybe simply using the path mechanism would be easier, but it introduces
 % potential bugs where unintended mat-files get processed.
 checkNextDir = 0;
+suffix = options.defaultSuffix{1};
+regexStartDir = options.defaultRegexStartDir;
 if exist('maFiles', 'var') ~= 1
   % You really should have provided this! Be explicit!
-
+  
   for iDir = 1:options.defaultDirs
     thisDir = options.defaultDirs{iDir};
-  if exist(thisDir, 'dir') ~= 7
-    if isempty(ls([thisDir] '*.mat']))
-      % Found no mat-file under data. Go search for current directory
-      checkNextDir = 1;
+    if exist(thisDir, 'dir') ~= 7
+      if isempty(ls([thisDir] '*' suffix]))
+        % Found no mat-file under data. Go search for current directory
+        checkNextDir = 1;
+      else
+        warning('batchFilter:matFiles', ['Auto-selecting all mat files under `' thisDir '`']);
+        matFiles = thisDir;
+      end
     else
-      warning('batchFilter:matFiles', ['Auto-selecting all mat files under `' thisDir '`']);
-      matFiles = thisDir;
+      checkNextDir = 1;
     end
-  else
-    checkNextDir = 1;
   end
-end
-
-% parse them into the list format
-if iscellstr(matFiles)
-  % good!
-  matFilesList = matFiles; % treat AS IS
-elseif exist(matFiles, 'dir') == 7
-  matFilesList = cellstr(ls([matFiles '*.mat']));
-elseif exist(matFiles, 'file') == 2
-  matFilesList = {matFiles}; % this is a single mat file
-end
-nMatFiles = numel(matFilesList);
-
-
-getCenter = statFun('mean', 1); % or choose median
-getDispersion = statFun('std', 1); % or choose mad/irq
-
-data = [];
-for iSub = 1:numel(files)
+  
+  if ischar(matFiles) % char: could be 1) dir, 2) glob, 3) regex
+    % decide is this is regexp
+    if ~isempty(regexp(matFiles, '^s/.*/$'))
+      % this could be regexp
+      if exist(matFiles, 'dir') == 7
+        % this could also be valid directory
+        warning('batchFilter:matFiles', ['Auto-selecting all mat files under `' matFiles '`\n'...
+          'Or did you mean a REGular EXpression by that!?'...
+          'If so, please rename that directory first.']);
+      else
+        % this is a regexp
+        matFiles = matFiles(3:end-1); % strip out s//
+        allFiles = getAllFiles(regexStartDir, matFiles, options.isMatchFullPath);
+        
+        if options.isMatchFullPath
+          matchstart = regexp(allFiles, matFiles);
+          matFiles = allFiles(~cellfun(@isempty, matchstart));
+        end
+      end
+      
+    elseif ~isempty(regexp(matFiles, '\*'))
+      % found a glob pattern
+      matFiles = cellstr(ls(matFiles));
+    else
+      % could only be a dir
+      matFiles = [matFiles '/']; % append an /
+      matFiles = regexprep(matFiles, '\\', '/'); % always use unix style path
+      matFiles = regexprep(matFiles, '/*$', '/');
+    end
+  end
+  
+  
+  % parse them into the list format
+  if iscellstr(matFiles)
+    % good!
+    matFilesList = matFiles; % treat AS IS
+  elseif exist(matFiles, 'dir') == 7
+    matFilesList = cellstr(ls([matFiles '*.mat']));
+  elseif exist(matFiles, 'file') == 2
+    matFilesList = {matFiles}; % this is a single mat file
+  end
+  nMatFiles = numel(matFilesList);
+  
+  
+  
+  
+  getCenter = statFun('mean', 1); % or choose median
+  getDispersion = statFun('std', 1); % or choose mad/irq
+  
+  data = [];
+  for iSub = 1:numel(files)
     s = load([dir files{iSub}]);
     mC{iSub} = accumarray(s.Trial(:, [6 1 2]), s.Trial(:, 4), [2 2 3], getCenter, NaN);
     sdC{iSub} = accumarray(s.Trial(:, [6 1 2]), s.Trial(:, 4), [2 2 3], getDispersion, NaN);
     [typeAV, typeRegIrreg, avgInterval] = ind2sub(size(mC{iSub}), find(mC{iSub}));
     data = [data; [iSub*ones(size(typeAV)), typeAV, typeRegIrreg, avgInterval, mC{iSub}(:), sdC{iSub}(:)]];
-end
-
+  end
+  
 end
