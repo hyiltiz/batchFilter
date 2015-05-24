@@ -1,7 +1,7 @@
 function stat = batchFilter(matfiles, varList, indexList, batchFun, outFiles, options)
 %BATCHFILTER applies batchFun as a filter to multiple mat-files then combines output into statistics-friendly tables.
 %
-% SYNOPSIS: stat = batchFilter(matfiles, batchFun, varList, indexList, outFiles)
+% SYNOPSIS: stat = batchFilter(matfiles, varList, indexList, batchFun, outFiles, options)
 %
 % INPUT
 % matFiles
@@ -68,16 +68,21 @@ function stat = batchFilter(matfiles, varList, indexList, batchFun, outFiles, op
 options.defaultDirs = {'./data/', './'}; % always include the last
 options.defaultSuffix = {'.mat'}; % for now, only checks for the first element
 options.defaultRegexStartDir = '.';
+options.outputTreeOnly = 0; % also output arrays
+
+dataTree = struct();
 
 %% Input processing
+
 % select the mat files
 % NOTE: maybe simply using the path mechanism would be easier, but it introduces
 % potential bugs where unintended mat-files get processed.
 
-[matFilesList status.selectMatFiles] = selectMatFiles(matFiles, options.defaultSuffix{1}, options.defaultRegexStartDir);
+[matFilesList status.selectMatFiles] = selectMatFiles(matFiles, ...
+                        options.defaultSuffix{1}, options.defaultRegexStartDir);
 nMatFiles = numel(matFilesList);
-
-
+dataTree.files = cell2struct(cellstr(num2str([1:nMatFiles]')), ...
+                             cellstr([repmat('file', [nMatFiles 1]) num2str([1:nMatFiles]')]));
 
 
   getCenter = statFun('mean', 1); % or choose median
@@ -92,4 +97,5 @@ nMatFiles = numel(matFilesList);
     data = [data; [iSub*ones(size(typeAV)), typeAV, typeRegIrreg, avgInterval, mC{iSub}(:), sdC{iSub}(:)]];
   end
 
+% parse output from tree to cell and, if possible, arrays
 end
