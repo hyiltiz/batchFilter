@@ -46,7 +46,7 @@ if exist('maFiles', 'var') ~= 1
         % Found no mat-file under data. Go search for current directory
         checkNextDir = 1;
       else
-        warning('batchFilter:matFiles', ['Auto-selecting all mat files under `' thisDir '`']);
+        warning('selectMatFiles:matFiles', ['Auto-selecting all mat files under `' thisDir '`']);
         matFiles = thisDir;
       end
     else
@@ -60,12 +60,12 @@ if ~isempty(regexp(matFiles, '^s/.*/$', 'once')) & exist(matFiles, 'dir') == 7
   % this could be regexp
   % this could also be valid directory that looks like: s/abc/
   status.isAmbiguousPatternOrDir = 1;
-  warning('batchFilter:matFiles', ['Auto-selecting all mat files under `' matFiles '`\n'...
+  warning('selectMatFiles:matFiles', ['Auto-selecting all mat files under `' matFiles '`\n'...
     'Or did you mean a REGular EXpression by that!?'...
     'If so, please rename that directory first.']);
 else
     % found no hilarious dir or no regexp at all!
-    if ~isempty(regexp(matFiles, '^s/.*/$', 'once')) 
+    if ~isempty(regexp(matFiles, '^s/.*/$', 'once'))
         % this is a regexp
         status.isRegexp = 1;
         matFiles = matFiles(3:end-1); % strip out s//
@@ -75,7 +75,7 @@ else
           matchstart = regexp(allFiles, matFiles);
           matFiles = allFiles(~cellfun(@isempty, matchstart));
         end
-      
+
 
     elseif ~isempty(regexp(matFiles, '\*', 'once'))
       % found a glob pattern
