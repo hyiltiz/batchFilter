@@ -142,6 +142,8 @@ function [stat dataTree] = batchFilter(matfiles, varList, indexList, groupVar, b
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+addpath('./lib/');
+
 options.defaultDirs = {'./data/', './'}; % always include the last
 options.defaultSuffix = {'.mat'}; % for now, only checks for the first element
 options.defaultRegexStartDir = '.';
