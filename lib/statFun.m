@@ -17,9 +17,9 @@ end
 if nargin == 0
   % display all possible cases
   disp(fieldnames(statFunctions));
-  
+
 else
-  
+
   switch lower(funType)
     case statFunctions.mean
       handle = @(x) nanmean(x, dim);
