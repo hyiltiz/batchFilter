@@ -52,7 +52,7 @@ function [stat dataTree] = batchFilter(matfiles, varList, indexList, groupVar, b
 %        grouped based on the values of the column(s) specified by groupVar of that variable (varList).
 %        Integers in indexList should be no greater than the column numbers of the variables.
 %        Length of groupVar should be equal to the length of the variable to be processed, with
-%        the same number of rows in each of them. 
+%        the same number of rows in each of them.
 %        Both indexList and groupVar are specified using the same rules. They can be:
 %        A single integer or an 1 x n array of integers that specifies the COLUMN indices
 %        of each variables in varList to be (grouped and then) processed. Use m x n array of integers to respectively
@@ -65,51 +65,51 @@ function [stat dataTree] = batchFilter(matfiles, varList, indexList, groupVar, b
 %              as the column index (second dimention) for the transposed variable. NOT IMPLEMENTED YET.
 %          3. A valid index which could be literally used as MATLAB index, e.g.
 %             '1:end', '3:6', '[2 4 end-1]' etc.
-%          4. 'eye()' specifies ALL the columns as target columns or all rows as 
-%             a single group. This is equivalent to '1:end' for indexList, and 
+%          4. 'eye()' specifies ALL the columns as target columns or all rows as
+%             a single group. This is equivalent to '1:end' for indexList, and
 %             a single vector of all ones with the same length of the variable(s)
 %             to be processed.
 %          5. 'file()' chooses the variable that shares the same name with the data
 %             file to be used.
 %          6. 'indexVarName' specifies the variable `indexVarName` in the data
 %            file whose values are to be treated as the index array (should be one dimentional vector) or the grouping
-%            variables (should be m x n matrix where groups are divided based on 
+%            variables (should be m x n matrix where groups are divided based on
 %            the value of each column).
 %       Use cell strings of size m x 1 to specify respectively for each of the m variables.
-%       For example: 
+%       For example:
 %       % for all mat-files under ./data/, group Trials(:,4) based on Trials(:,[2 3]) and then
 %       % return the mean for each group (6 groups in total)
 %       batchFilter('data', 'Trials', 4, [2 3], 'mean');
-%       
+%
 %       % for all mat-files under ./data/, group Trials(:,targetIndex) based on Trials(:,condition) and then
 %       % return the mean for each group (6 groups in total)
 %       batchFilter('data', 'Trials', 'targetIndex', 'condition', 'mean');
 %
 %		batchFun
-%        A function handle or a string that specifies the processing method on the 
-%        indexed (indexList) columns of the target variables after dividing them 
+%        A function handle or a string that specifies the processing method on the
+%        indexed (indexList) columns of the target variables after dividing them
 %        into groups based on groupVar. The first input and output argument of the
 %        function shuold be a numeric array of any size. The function handle can
 %        be defined using a) the function handle (@); b) inline functions; c) function
 %        m-files (recommended). The string is processed
-%        by statFun to get several basic statistics (e.g. 'mean', 'std'). For a 
+%        by statFun to get several basic statistics (e.g. 'mean', 'std'). For a
 %        complete list of valid strings, see HELP statFun.
 %        If any additinoal input
 %        arguments are required, batchFun can be a cell of two elements whose fist
-%        element specifies the processing method, and the contents of second 
+%        element specifies the processing method, and the contents of second
 %        element (cell) specifies other arguments in that order.
 %        batchFun could also be 1 x n cell with elements specified according to the
 %        rules above where each of elements are used as a seperate processing method
 %        on each of the variables.
 %        Use cell array of size m x n to specify respectively for each of the m variables.
-%        For example: 
+%        For example:
 %        'mean' % compute mean
 %        {'trimmean', {20}} % compute 20% trimmed mean; see HELP TRIMMEAN
 %        {'mean', 'std'} % compute mean and std seperately
 %        {'trimmean', {'trimmean', {10}}, {'trimmean', {20}} } % compute several trimmed means seperately
 %        [{'mean', 'std'}; {'trimmean', 'range'}] % compute mean and std of the first variable, then compute trimmean and range for the second variable
-%        @myFun % apply user defined myFun. Define using a function handle (@), 
-%        
+%        @myFun % apply user defined myFun. Define using a function handle (@),
+%
 %		outFiles
 %   options
 %
@@ -163,6 +163,9 @@ nMatFiles = numel(matFilesList);
 dataTree.files = cell2struct(cellstr(num2str([1:nMatFiles]')), ...
                              cellstr([repmat('file', [nMatFiles 1]) num2str([1:nMatFiles]')]));
 
+    s = load([dir files{iSub}]);
+    s.file__Name_ = files{iSub};
+    targetVars = selectFields(indexList, s, options.isUserDefined);
 
   getCenter = statFun('mean', 1); % or choose median
   getDispersion = statFun('std', 1); % or choose mad/irq
