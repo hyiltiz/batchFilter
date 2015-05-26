@@ -75,6 +75,9 @@ data files to be processed. For example:
 % to process variables `Pre` and `Post` in all the data files
 {'Pre', 'Post'}
 
+% to process fields `Pre` and `Post` of variable `data` in all the data files
+{'data.Pre', 'data.Post'}
+
 % or 'train*' to process variables `train1`, `train2` etc. in all the data files
 {'train*'}
 
@@ -192,10 +195,10 @@ the m variables. For example:
 --------
 
 
-Author: Hörmetjan Yiltiz, 2015-05-23
+Author: Hï¿½rmetjan Yiltiz, 2015-05-23
 UPDATED: 2015-05-23 16:18:17
 
-Copyright 2015 by Hörmetjan Yiltiz <hyiltiz@gmail.com>
+Copyright 2015 by Hï¿½rmetjan Yiltiz <hyiltiz@gmail.com>
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
