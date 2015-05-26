@@ -24,9 +24,10 @@ function selectIndexed()
 % and then uses dimIndex as the column index (second dimention) for the transposed
 % variable. *NOT IMPLEMENTED YET*.
 %
-% 3. A valid index which could be literally used as MATLAB index, e.g. '`1:end'`,
-% `'3:6'`, `'[2 4 end-1]'` etc.
-%
+% 3. A string representation of a valid MATLAB index which could be evaluated as
+% a literal matrix or cell index (Use varList to specify a structure indexing
+% instead), e.g. '`1:end'`, `'3:6'`, `'[2 4 end-1]'`, `'{[1 2]}'` etc.
+% 
 % 4. `'eye()'` specifies ALL the columns as target columns or all rows as a single
 % group. This is equivalent to '1:end' for indexList, and a single vector of all
 % ones with the same length of the variable(s) to be processed.

@@ -108,8 +108,9 @@ original row index as the column index for the transposed variable.
 and then uses dimIndex as the column index (second dimention) for the transposed
 variable. *NOT IMPLEMENTED YET*.
 
-3. A valid index which could be literally used as MATLAB index, e.g. '`1:end'`,
-`'3:6'`, `'[2 4 end-1]'` etc.
+3. A string representation of a valid MATLAB index which could be evaluated as
+a literal matrix or cell index (Use varList to specify a structure indexing
+instead), e.g. '`1:end'`, `'3:6'`, `'[2 4 end-1]'`, `'{[1 2]}'` etc.
 
 4. `'eye()'` specifies ALL the columns as target columns or all rows as a single
 group. This is equivalent to '1:end' for indexList, and a single vector of all
@@ -191,10 +192,10 @@ the m variables. For example:
 --------
 
 
-Author: HÃ¶rmetjan Yiltiz, 2015-05-23
+Author: Hörmetjan Yiltiz, 2015-05-23
 UPDATED: 2015-05-23 16:18:17
 
-Copyright 2015 by HÃ¶rmetjan Yiltiz <hyiltiz@gmail.com>
+Copyright 2015 by Hörmetjan Yiltiz <hyiltiz@gmail.com>
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
