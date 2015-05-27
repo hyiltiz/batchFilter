@@ -116,8 +116,8 @@ a literal matrix or cell index (Use varList to specify a structure indexing
 instead), e.g. '`1:end'`, `'3:6'`, `'[2 4 end-1]'`, `'{[1 2]}'` etc.
 
 4. `'eye()'` specifies ALL the columns as target columns or all rows as a single
-group. This is equivalent to '1:end' for indexList, and a single vector of all
-ones with the same length of the variable(s) to be processed.
+group. This is equivalent to '1:end' for indexList, or a single vector of all
+ones with the same length of the variable(s) to be processed for groupVar.
 
 5. `'file()'` chooses the variable that shares the same name with the data file
 to be used.
