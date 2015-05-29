@@ -73,32 +73,20 @@ if iscellstr(index)
   % parse each element separately
   for iCol = 1 : numel(index)
     if ischar(index{iCol})
-      [targetColList{iVar} status] = parseColString(index{iCol}, srcTable,  structData);
+      [targetColumnList{iCol} status] =getColumnsFromTable(index{iCol}, srcTable,  structData);
     end
   end
 
-elseif ischar(index)
-  % function() or pattern?
-  [targetColList{1} status] = parseColString(index{iCol}, srcTable,  structData);
-end % cellstr or a single string
+else
+  % a single string or an array
+  % get the index out
+  [targetColumnList{1} status] = getColumnsFromTable(index{iCol}, srcTable,  structData);
+end %
 
-
-% Hurrah! No more enigmas now!
-for iCol = 1 : numel(targetColList)
-  try
-    %targetVars{iVar} = structData.(targetVarList{iVar});
-    % NOTE: Allow for structure indexing
-    % we could have still use recursiveGetFields (an overkill with eval)
-    targetColumns{iCol} = recursiveGetFields(['structData.' targetColList{iCol}]);
-  catch
-    error('selectIndex:InvalidIndex',...
-      'Index: %f requested!', targetColList{iCol});
-  end
-end
 
 end % function
 
-function [indexedVarValue, table, status] = parseVarString(indexStr, table, wrkspc)
+function [indexedVarValue, table, status] = getColumnsFromTable(indexStr, table, wrkspc)
 status.succeed = 0;
 % requestedVar is an encoded string
 % return the decoded cell string
@@ -185,7 +173,7 @@ end
 
 if status.isTableTransformation
   % we updated the table this time; get the indexed variable next time
-[matchedVarList, table, status] = parseVarString(indexStr, table, wrkspc)
+[matchedVarList, table, status] = getColumnsFromTable(indexStr, table, wrkspc)
 
 else
   % end of parse
