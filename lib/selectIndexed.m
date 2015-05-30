@@ -73,14 +73,14 @@ if iscellstr(index)
   % parse each element separately
   for iCol = 1 : numel(index)
     if ischar(index{iCol})
-      [targetColumnList{iCol} table status] =getColumnsFromTable(index{iCol}, srcTable,  structData);
+      [targetColumnList{iCol} status] =getColumnsFromTable(index{iCol}, srcTable,  structData);
     end
   end
-  
+
 else
   % a single string or an array
   % get the index out
-  [targetColumnList{1} table status] = getColumnsFromTable(index, srcTable,  structData);
+  [targetColumnList{1} status] = getColumnsFromTable(index{iCol}, srcTable,  structData);
 end %
 
 
@@ -92,43 +92,43 @@ status.succeed = 0;
 % return the decoded cell string
 if ischar(indexStr)
   indexStr = strtrim(indexStr);
-  
+
   allVariables = fieldnames(wrkspc);
-  
+
   % file__Name__ was not part of original data
   allVariables(strcmp(allVariables, 'file__Name__')) = [];
-  
+
   if strcmp(indexStr, 'file()')
     % use the file name
     status.isFromFileName = 1;
     indexStr = cellstr(wrkspc.file__Name__); % use it as the index to the variable
-    
+
   elseif strcmp(indexStr, 'eye()')
     % use all variables
     status.isAllVariables = 1;
     indexStr = sprintf('1:%d', size(table,2));
-    
-  elseif ~isempty(regexp(indexStr, '^([a-zA-Z]*\(.*\)){2,}$', 'once'))
+
+  elseif ~isempty(indexStr, '^([a-zA-Z]*\(.*\)){2,}$', 'once'))
     % a string of format: a(x)b(y) or more
     status.isConsecutiveFunctions = 1;
     nestedFormat = indexStr;
-    while ~isempty(regexp(nestedFormat, '^([a-zA-Z]*\(.*\)){2,}$', 'once'))
+    while ~isempty(nestedFormat, '^([a-zA-Z]*\(.*\)){2,}$', 'once'))
       % a()b()c(hello) => a()b(c(hello))
       % a()b()c() => a()b(c())
       nestedFormat = regexprep(nestedFormat, '^(.*)(.*)\(\)(.*\(.*\))$', '$1$2($3)');
     end
-    
+
     warning('selectIndexed:InvalidFunctionSpecifier',...
       'Consecutive functions of form a()b() is found, which effectively means absolutely nothing as far as indexing goes! We are nice to support a nested syntax, though, such as: a(b()). \nDid you mean something like this: \n%s', nestedFormat);
-    
+
   elseif ~isempty(regexp(indexStr, '^T\((.*)\)$', 'tokens'))
     % do a transpose
     status.isTranspose = 1;
     matchedTokensCell = regexp(indexStr, '^T\((.*)\)$', 'tokens');
     indexStr = matchedTokensCell{1}{1};
     table = transpose(table);
-    
-  elseif ~isempty(regexp(indexStr, '^P\((.*),(.*)\)$', 'tokens'))
+
+  elseif ~isempty(regexp(indexStr, '^P\((.*),(.*)\)$', 'tokens')
     % do a permutation
     status.isPermute = 1;
     matchedTokensCell = regexp(indexStr,'^P\((.*),(.*)\)$', 'tokens');
@@ -140,13 +140,13 @@ if ischar(indexStr)
       warning('selectIndexed:InvalidPermuteOrder', 'Could not permute with: %s', permuteOrder);
       rethrow(lasterror);
     end
-    
+
   else
     status.isUnknownIndex = 1;
     warning('selectIndexed:UnknownIndexSpecifier', 'Index specifier `%s` is not recognized.\nSee HELP batchFilter to see the description for all valid index specifiers.', indexStr)
     if isDebug; keyboard; end
   end % parse
-  
+
 else
   status.isNotStringIndex = 1;
   % warning('selectIndexed:NotAString', 'An index of type `string` is required!');
@@ -154,10 +154,14 @@ else
 end % ischar
 
 
-if ischar(indexStr) & ~isempty(regexp(indexStr, '^\{(.*)\}(\(.*\))?$', 'tokens'))
-  % cell indexing found
+if ischar(indexStr) & ~isempty(regexp(indexStr, '^(\{.*\})*(\(.*\))?$', 'tokens'))
+  % cell indexing found, possibly nested
   status.isCellIndex = 1;
-  matchedTokensCell =  regexp(indexStr, '^\{(.*)\}(\(.*\))?$', 'tokens');
+  matchedTokensCell = regexp(indexStr, '^(\{.*\})*(\(.*\))?$', 'tokens');
+
+  % NOTE <-----
+  % make it work for consecutive cell index: {}{}{}
+
   eval(sprintf('table = table{[%s]};', matchedTokensCell{1}{1}));
   indexStr = matchedTokensCell{1}{2};
   if isempty(indexStr)
@@ -173,8 +177,8 @@ end
 
 if status.isTableTransformation
   % we updated the table this time; get the indexed variable next time
-  [matchedVarList, table, status] = getColumnsFromTable(indexStr, table, wrkspc)
-  
+[matchedVarList, table, status] = getColumnsFromTable(indexStr, table, wrkspc)
+
 else
   % end of parse
   % select out the indexed COLUMNS
@@ -183,8 +187,8 @@ else
     status.isNumericIndex = 1;
     indexedVarValue = table(:, [indexStr]);
   else
-    eval(sprintf('indexedVarValue = table(:, [%s]);', indexStr));
-  end
+  eval(sprintf('indexedVarValue = table(:, [%s]);', indexStr));
+end
 end
 
 end
