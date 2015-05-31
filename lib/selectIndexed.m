@@ -80,13 +80,14 @@ if iscellstr(index)
 else
   % a single string or an array
   % get the index out
-  [targetColumnList{1} status] = getColumnsFromTable(index{iCol}, srcTable,  structData);
+  [targetColumnList{1} status] = getColumnsFromTable(index, srcTable,  structData);
 end %
 
 
 end % function
 
 function [indexedVarValue, table, status] = getColumnsFromTable(indexStr, table, wrkspc)
+isDebug = 1;
 status.succeed = 0;
 % requestedVar is an encoded string
 % return the decoded cell string
@@ -108,11 +109,11 @@ if ischar(indexStr)
     status.isAllVariables = 1;
     indexStr = sprintf('1:%d', size(table,2));
 
-  elseif ~isempty(indexStr, '^([a-zA-Z]*\(.*\)){2,}$', 'once'))
+  elseif ~isempty(regexp(indexStr, '^([a-zA-Z]*\(.*\)){2,}$', 'once'))
     % a string of format: a(x)b(y) or more
     status.isConsecutiveFunctions = 1;
     nestedFormat = indexStr;
-    while ~isempty(nestedFormat, '^([a-zA-Z]*\(.*\)){2,}$', 'once'))
+    while ~isempty(regexp(nestedFormat, '^([a-zA-Z]*\(.*\)){2,}$', 'once'))
       % a()b()c(hello) => a()b(c(hello))
       % a()b()c() => a()b(c())
       nestedFormat = regexprep(nestedFormat, '^(.*)(.*)\(\)(.*\(.*\))$', '$1$2($3)');
@@ -128,7 +129,7 @@ if ischar(indexStr)
     indexStr = matchedTokensCell{1}{1};
     table = transpose(table);
 
-  elseif ~isempty(regexp(indexStr, '^P\((.*),(.*)\)$', 'tokens')
+  elseif ~isempty(regexp(indexStr, '^P\((.*),(.*)\)$', 'tokens'))
     % do a permutation
     status.isPermute = 1;
     matchedTokensCell = regexp(indexStr,'^P\((.*),(.*)\)$', 'tokens');
@@ -141,6 +142,11 @@ if ischar(indexStr)
       rethrow(lasterror);
     end
 
+  elseif ~isempty(regexp(indexStr, '[\[\]0-9:end\s()]+', 'once'))
+    status.isPossibleIndexString = 1;
+    % this regex is not well formed, could match pretty much everything
+    % that is syntax error
+    
   else
     status.isUnknownIndex = 1;
     warning('selectIndexed:UnknownIndexSpecifier', 'Index specifier `%s` is not recognized.\nSee HELP batchFilter to see the description for all valid index specifiers.', indexStr)
@@ -177,7 +183,7 @@ end
 
 if status.isTableTransformation
   % we updated the table this time; get the indexed variable next time
-[matchedVarList, table, status] = getColumnsFromTable(indexStr, table, wrkspc)
+[matchedVarList, table, status] = getColumnsFromTable(indexStr, table, wrkspc);
 
 else
   % end of parse
@@ -187,7 +193,11 @@ else
     status.isNumericIndex = 1;
     indexedVarValue = table(:, [indexStr]);
   else
+    try
   eval(sprintf('indexedVarValue = table(:, [%s]);', indexStr));
+    catch
+          if isDebug; keyboard; end
+    end
 end
 end
 
