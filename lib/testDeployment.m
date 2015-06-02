@@ -16,8 +16,6 @@ testIndexes = {
   'T(1:end)',...
   'P(5, [2 1])',...
   'T(eye())',...
-  'eye(T(3))',...
-  'T(3)eye()',...
   'T(P(3, [2 1]))',...
   {1,...
   [1 2],...
@@ -25,8 +23,29 @@ testIndexes = {
   'eye()',...
   }
   };
+
 results = {};
 status = {};
 for i=1:numel(testIndexes)
   [results{i} status{i}] = selectIndexed(testIndexes{i}, s.Trial, s, 1)
+end
+
+testIndexes = { % these should fail
+  'eye(T(3))',...
+  'T(3)eye()',...
+};
+
+results = {};
+status = {};
+nFails = 0;
+for i=1:numel(testIndexes)
+  try
+  [results{i} status{i}] = selectIndexed(testIndexes{i}, s.Trial, s, 1)
+catch
+  nFails = nFails + 1;
+end
+end
+
+if nFails ~= numel(testIndexes)
+  error('Fail tests succeeded!');
 end

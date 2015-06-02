@@ -121,12 +121,12 @@ index permutation function P().
 the data file to be used. Could be provided as the first argument to index
 transpose function T() and index permutation function P().
 
-5. A valid MATLAB index or a string representation of it which could be
-evaluated as a literal matrix or cell index (Use varList to specify a structure
-indexing instead), e.g. `1:4`, `1`, '`1:end'`, `'3:6'`, `'[2 4 end-1]'`, `'{[1 2]}'` etc. Do
-NOT include any brackets `()` in this string expression, which is reserved for
-the special functions mentioned above. Use square brackets `[]` for grouping
-parts of the expression when necessary.
+5. A valid numeric MATLAB index or a string representation of a valid MATLAB
+index which could be evaluated as a literal matrix or cell index (Use varList to
+specify a structure indexing instead), e.g. `1:4`, `1`, '`1:end'`, `'3:6'`, `'[2
+4 end-1]'`, `'{[1 2]}'` etc. Do NOT include any brackets `()` in this string
+expression, which is reserved for the special functions mentioned above. Use
+square brackets `[]` for grouping parts of the expression when necessary.
 
 6. `'indexVarName'` specifies the variable `indexVarName` in the data file whose
 values are to be treated as the index array (should be one dimentional vector)
