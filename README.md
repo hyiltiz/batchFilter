@@ -75,6 +75,9 @@ data files to be processed. For example:
 % to process variables `Pre` and `Post` in all the data files
 {'Pre', 'Post'}
 
+% to process fields `Pre` and `Post` of variable `data` in all the data files
+{'data.Pre', 'data.Post'}
+
 % or 'train*' to process variables `train1`, `train2` etc. in all the data files
 {'train*'}
 
@@ -101,22 +104,29 @@ variables. m should be equal to the number of variables in varList.
 
 Could also be a string that satisfies one of the following cases:
 
-1. `'T(rowIndex, n)'`. This first `transpose`s the variable, and then uses the
+1. `'T(rowIndex)'`. This first `transpose`s the variable, and then uses the
 original row index as the column index for the transposed variable.
 
 2. `'P(dimIndex, ORDER)'`. This permutes the variable using `permute(x, order)`,
 and then uses dimIndex as the column index (second dimention) for the transposed
-variable. *NOT IMPLEMENTED YET*.
+variable.
 
-3. A valid index which could be literally used as MATLAB index, e.g. '`1:end'`,
-`'3:6'`, `'[2 4 end-1]'` etc.
+3. `'eye()'` specifies ALL the columns as target columns or all rows as a single
+group. This is equivalent to '1:end' for indexList, or a single vector of all
+ones with the same length of the variable(s) to be processed for groupVar.
+Could be provided as the first argument to index transpose function T() and
+index permutation function P().
 
-4. `'eye()'` specifies ALL the columns as target columns or all rows as a single
-group. This is equivalent to '1:end' for indexList, and a single vector of all
-ones with the same length of the variable(s) to be processed.
+4. `'file()'` gets the indexes from the variable that shares the same name with
+the data file to be used. Could be provided as the first argument to index
+transpose function T() and index permutation function P().
 
-5. `'file()'` chooses the variable that shares the same name with the data file
-to be used.
+5. A valid numeric MATLAB index or a string representation of a valid MATLAB
+index which could be evaluated as a literal matrix or cell index (Use varList to
+specify a structure indexing instead), e.g. `1:4`, `1`, '`1:end'`, `'3:6'`, `'[2
+4 end-1]'`, `'{[1 2]}'` etc. Do NOT include any brackets `()` in this string
+expression, which is reserved for the special functions mentioned above. Use
+square brackets `[]` for grouping parts of the expression when necessary.
 
 6. `'indexVarName'` specifies the variable `indexVarName` in the data file whose
 values are to be treated as the index array (should be one dimentional vector)
@@ -191,10 +201,10 @@ the m variables. For example:
 --------
 
 
-Author: Hörmetjan Yiltiz, 2015-05-23
+Author: H�rmetjan Yiltiz, 2015-05-23
 UPDATED: 2015-05-23 16:18:17
 
-Copyright 2015 by Hörmetjan Yiltiz <hyiltiz@gmail.com>
+Copyright 2015 by H�rmetjan Yiltiz <hyiltiz@gmail.com>
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
