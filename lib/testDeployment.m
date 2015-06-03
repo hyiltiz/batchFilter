@@ -27,7 +27,7 @@ testIndexes = {
 results = {};
 status = {};
 for i=1:numel(testIndexes)
-  [results{i} status{i}] = selectIndexed(testIndexes{i}, s.Trial, s, 1)
+  [results{i} status{i}] = selectIndexed(testIndexes{i}, s.Trial, s)
 end
 
 testIndexes = { % these should fail
@@ -40,7 +40,7 @@ status = {};
 nFails = 0;
 for i=1:numel(testIndexes)
   try
-  [results{i} status{i}] = selectIndexed(testIndexes{i}, s.Trial, s, 1)
+  [results{i} status{i}] = selectIndexed(testIndexes{i}, s.Trial, s)
 catch
   nFails = nFails + 1;
 end

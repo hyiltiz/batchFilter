@@ -1,4 +1,4 @@
-function [targetColumnList, targetVariable, status] = selectIndexed(index, srcTable, structData, isGroup)
+function [targetColumnList, targetVariable, status] = selectIndexed(index, srcTable, structData)
 % ##### indexList, groupVar
 %
 % indexList specifies the target COLUMN(S) of the variables specified by varList
