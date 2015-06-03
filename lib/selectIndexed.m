@@ -183,8 +183,10 @@ if ischar(indexStr) && ~isempty(regexp(indexStr, '^(\{.*\})*(\(.*\))?$', 'tokens
   % NOTE <-----
   % make it work for consecutive cell index: {}{}{}
   
-  eval(sprintf('table = table{[%s]};', matchedTokensCell{1}{1}));
-  indexStr = matchedTokensCell{1}{2};
+%   eval(sprintf('table = table{[%s]};', matchedTokensCell{1}{1}));
+    table = recursiveGetNestedCell(['table' matchedTokensCell{1}{1}]);
+      indexStr = matchedTokensCell{1}{2};
+    
   if isempty(indexStr)
     indexStr = 'eye()';
   end
