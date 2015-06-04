@@ -20,22 +20,16 @@ The data files could be specified with one of the following synatx:
 
 1. A directory string. In this case, all mat-files under this directory is
 processed. For example:
-  ```matlab
-  % setting the value of `matFiles` to
-  'exp1/data/' % searches under exp1/data/
-  ```
+```matlab
+% setting the value of `matFiles` to
+'exp1/data/' % searches under exp1/data/
+```
 
-2. A glob pattern string consisting one or more wildcard `*` sign which
-represents zero or more of any characters. The glob pattern will be expanded by
-MATLAB's native `ls` command whenever possible, which in turn, relies upon the
-`ls` or `dir` utilities that the operating system provides. In other cases (e.g.
-when more than one wildcard are present under different directories,
-`data/*/*.mat`), the glob pattern is automatically transformed to a regex. For
-example:
-  ```matlab
-  % setting the value of `matFiles` to
-  'exp*/data/' % searches through data under exp1, exp2 etc.  
-  ```
+2. A glob pattern string consisting one or more wildcard `*` sign which represents zero or more of any characters. The glob pattern will be expanded by MATLAB's native `ls` command whenever possible, which in turn, relies upon the `ls` or `dir` utilities that the operating system provides. In other cases (e.g. when more than one wildcard are present under different directories, `data/*/*.mat`), the glob pattern is automatically transformed to a regex. For example:
+```matlab
+% setting the value of `matFiles` to
+'exp*/data/' % searches through data under exp1, exp2 etc.  
+```
 
 3. A regular expressions pattern (regexp) string inside `'s/<pattern>/'`. If a
 regexp is provided, the pattern is matched against the relative full path under
@@ -44,17 +38,17 @@ mode so that the pattern is matched against each file (e.g. `'a.mat'`) and
 folder names (e.g. `'exp1'`, `'data'`) instead of relative full path names (e.g.
 `'./exp1/data/a.mat'`). The regexp matching is processed by MATLAB's native
 `regexp` command. see `DOC REGEXP` for more information. For example:
-  ```matlab
-  % setting the value of `matFiles` to
-  's/.*john.*\.mat/' % searches for all .mat files whose name contains `'john'`.
-  ```
+```matlab
+% setting the value of `matFiles` to
+'s/.*john.*\.mat/' % searches for all .mat files whose name contains `'john'`.
+```
 
 4. A list of cell strings where each elements of the cell string is a single
 mat-file to be treated as the data-file to be processed. For example:
-  ```matlab
-  % setting the value of `matFiles` to
-  {'data/a.mat', 'data/b.mat'} % processes all data files as mat-files.
-  ```matlab
+```matlab
+% setting the value of `matFiles` to
+{'data/a.mat', 'data/b.mat'} % processes all data files as mat-files.
+```matlab
 
 
 ##### varList
@@ -69,25 +63,25 @@ the data file it was stored in.
 Use a cell string of size m x n to respectively specify the variables to be
 processed for every single data files. m should be the same with the number of
 data files to be processed. For example:
-  ```matlab
-  % set the value of `varList` to one of the values below
+```matlab
+% set the value of `varList` to one of the values below
 
-  % to process variable `Trials` in all the data files
-  'Trials'
+% to process variable `Trials` in all the data files
+'Trials'
 
-  % to process variables `Pre` and `Post` in all the data files
-  {'Pre', 'Post'}
+% to process variables `Pre` and `Post` in all the data files
+{'Pre', 'Post'}
 
-  % to process fields `Pre` and `Post` of variable `data` in all the data files
-  {'data.Pre', 'data.Post'}
+% to process fields `Pre` and `Post` of variable `data` in all the data files
+{'data.Pre', 'data.Post'}
 
-  % or 'train*' to process variables `train1`, `train2` etc. in all the data files
-  {'train*'}
+% or 'train*' to process variables `train1`, `train2` etc. in all the data files
+{'train*'}
 
-  % process ALL the variables in the first mat file, and process the variable that
-  % shares name with the second data file
-  {'1'; 'eye()'}
-  ```
+% process ALL the variables in the first mat file, and process the variable that
+% shares name with the second data file
+{'1'; 'eye()'}
+```
 
 ##### indexList, groupVar
 
@@ -138,17 +132,17 @@ on the value of each column).
 
 In addition, use cell strings of size m x 1 to specify respectively for each of
 the m variables. For example:
-  ```matlab
-  % use the following syntax for setting values for `indexList` or `groupVar`
-  % for all mat-files under ./data/, group Trials(:,4) based on Trials(:,[2 3])
-  % and then return the mean for each group (6 groups in total)
-  batchFilter('data', 'Trials', 4, [2 3], 'mean');
+```matlab
+% use the following syntax for setting values for `indexList` or `groupVar`
+% for all mat-files under ./data/, group Trials(:,4) based on Trials(:,[2 3])
+% and then return the mean for each group (6 groups in total)
+batchFilter('data', 'Trials', 4, [2 3], 'mean');
 
-  % for all mat-files under ./data/, group Trials(:,targetIndex) based on
-  % Trials(:,condition) and then return the mean for each group (results in 6
-  % groups in total)
-  batchFilter('data', 'Trials', 'targetIndex', 'condition', 'mean');
-  ```
+% for all mat-files under ./data/, group Trials(:,targetIndex) based on
+% Trials(:,condition) and then return the mean for each group (results in 6
+% groups in total)
+batchFilter('data', 'Trials', 'targetIndex', 'condition', 'mean');
+```
 
 ##### batchFun
 
@@ -170,27 +164,27 @@ variables.
 
 In addition, use cell array of size m x n to specify respectively for each of
 the m variables. For example:
-  ```matlab
-  % compute mean
-  'mean'
+```matlab
+% compute mean
+'mean'
 
-  % compute 20% trimmed mean; see HELP TRIMMEAN
-  {'trimmean', {20}}
+% compute 20% trimmed mean; see HELP TRIMMEAN
+{'trimmean', {20}}
 
-  % compute mean and std seperately
-  {'mean', 'std'}
+% compute mean and std seperately
+{'mean', 'std'}
 
-  % compute several trimmed means seperately
-  {'trimmean', {'trimmean', {10}}, {'trimmean', {20}} }
+% compute several trimmed means seperately
+{'trimmean', {'trimmean', {10}}, {'trimmean', {20}} }
 
-  % compute mean and std of the first variable, then compute trimmean and range
-  % for the second variable
-  [{'mean', 'std'}; {'trimmean', 'range'}]
+% compute mean and std of the first variable, then compute trimmean and range
+% for the second variable
+[{'mean', 'std'}; {'trimmean', 'range'}]
 
-  % apply user defined myFun. Define using a function handle (@), inline
-  % functions, or a function m-file (recommended)
-    @myFun
-  ```
+% apply user defined myFun. Define using a function handle (@), inline
+% functions, or a function m-file (recommended)
+  @myFun
+```
 
 ##### outFiles
 
@@ -211,7 +205,7 @@ Copyright 2015 by H�rmetjan Yiltiz <hyiltiz@gmail.com>
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
-(at your option) any lamamter version.
+(at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
