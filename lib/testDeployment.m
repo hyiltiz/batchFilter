@@ -1,4 +1,61 @@
 % test scripts for the bunch of functions
+%% test selectMatfiles()
+disp('testing lib/selectMatfiles()');
+testIndexes = {
+  'data/',...
+  'data',...
+  './data/',...
+  './data',...
+  'data/*',...
+  'data/*.mat'...
+  '*data/*/',...
+  'data/*/*.mat',...
+  'data/*/*Pre*',...
+  'data/*/*Pre*.mat',...
+  's/.*Pre.*/',...
+  's/Pre/',...
+  '',...
+  [],...
+  {'./data/angelo.mat'},...
+  {'./data/angelo.mat', './data/cuixuemei.mat'},...
+  {'data/angelo.mat', 'data/cuixuemei.mat'},...
+  {'./data/*.mat', './data/angelo.mat', './data/cuixuemei'},... % 2nd out
+  };
+
+results = {};
+status = {};
+options.defaultDirs = {'./data/', './'}; % always include the last
+options.isMatchFullPath = 1;
+for i=15:numel(testIndexes)
+  [results{i} status{i}] = selectMatFiles(testIndexes{i}, '.mat', '.', options)
+end
+
+testIndexes = { % these should fail
+  ... % false input
+  {'./data/'},...
+  {'./data/*'},...
+  ...% buggy syntax
+  's/[Pp]re.*',...
+  ...  % feature un-implemented
+  };
+
+results = {};
+status = {};
+nFails = 0;
+for i=1:numel(testIndexes)
+  try
+    [results{i} status{i}] = selectMatFiles(testIndexes{i}, '.mat', '.', options)
+  catch
+    nFails = nFails + 1;
+  end
+end
+
+if nFails ~= numel(testIndexes)
+  error('Fail tests succeeded!');
+end
+
+
+
 %% test selectFields()
 
 disp('testing lib/selectFields()');
@@ -54,10 +111,10 @@ result2 = {};
 nFails = 0;
 for i=1:numel(testIndexes)
   try
-  [results{i} results2{i} status{i}] = selectFields(testIndexes{i}, s, 0)
-catch
-  nFails = nFails + 1;
-end
+    [results{i} results2{i} status{i}] = selectFields(testIndexes{i}, s, 0)
+  catch
+    nFails = nFails + 1;
+  end
 end
 
 if nFails ~= numel(testIndexes)
@@ -98,21 +155,20 @@ end
 testIndexes = { % these should fail
   'eye(T(3))',...
   'T(3)eye()',...
-};
+  };
 
 results = {};
 status = {};
 nFails = 0;
 for i=1:numel(testIndexes)
   try
-  [results{i} status{i}] = selectIndexed(testIndexes{i}, s.Trial, s)
-catch
-  nFails = nFails + 1;
-end
+    [results{i} status{i}] = selectIndexed(testIndexes{i}, s.Trial, s)
+  catch
+    nFails = nFails + 1;
+  end
 end
 
 if nFails ~= numel(testIndexes)
   error('Fail tests succeeded!');
 end
-
 

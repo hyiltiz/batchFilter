@@ -25,10 +25,13 @@ processed. For example:
 'exp1/data/' % searches under exp1/data/
 ```
 
-2. A glob pattern string consisting one or more asterisks (\*) sign which
+2. A glob pattern string consisting one or more wildcard `*` sign which
 represents zero or more of any characters. The glob pattern will be expanded by
-MATLAB's native `ls` command, which in turn, relies upon the `ls` or `dir`
-utilities that the operating system provides. For example:
+MATLAB's native `ls` command whenever possible, which in turn, relies upon the
+`ls` or `dir` utilities that the operating system provides. In other cases (e.g.
+when more than one wildcard are present under different directories,
+`data/*/*.mat`), the glob pattern is automatically transformed to a regex. For
+example:
 ```matlab
 % setting the value of `matFiles` to
 'exp*/data/' % searches through data under exp1, exp2 etc.  

@@ -147,6 +147,7 @@ addpath('./lib/');
 options.defaultDirs = {'./data/', './'}; % always include the last
 options.defaultSuffix = {'.mat'}; % for now, only checks for the first element
 options.defaultRegexStartDir = '.';
+options.isMatchFullPath = 1;
 options.outputTreeOnly = 0; % also output arrays
 
 dataTree = struct();
