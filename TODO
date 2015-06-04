@@ -1,7 +1,7 @@
 test and implement parallel computing
 Progress bar
 This idea is not yet clear: simply replacing the , seperator with | means nothing useful.
-with the help of subsref, could implement a full path specifier tha support
+with the help of subsref, could implement a full path specifier that support
 regex and glob pattern as well as some special functions, to get a more unified
-interface:
+interface: (works also recursively, not stepwise)
 'data/sub[0-9]*\.mat|previous().dataCell{1:3}.file()(1:end, :)'
