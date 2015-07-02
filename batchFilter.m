@@ -1,4 +1,4 @@
-function [stat dataTree] = batchFilter(matfiles, varList, indexList, groupVar, batchFun, outFiles, options)
+function [stat dataTree] = batchFilter(matFiles, varList, indexList, groupVar, batchFun, outFiles, options)
 %BATCHFILTER applies batchFun as a filter to multiple mat-files then combines output into statistics-friendly tables.
 %
 % SYNOPSIS: stat = batchFilter(matfiles, varList, indexList, batchFun, outFiles, options)

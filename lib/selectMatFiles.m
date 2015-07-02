@@ -82,11 +82,21 @@ else
       status.isGlob = 1;
       matFiles = cellstr(ls(matFiles));
     else
+      if exist(matFiles, 'file') == 2
+        % just a file, do nothing
+        
+      else
+        if exist(matFile, 'dir') == 7
       % could only be a dir
       status.isDir = 1;
       matFiles = [matFiles '/']; % append an /
       matFiles = regexprep(matFiles, '\\', '/'); % always use unix style path
       matFiles = regexprep(matFiles, '/*$', '/');
+        else
+          error('selectMatFiles:DirectoryNotFound',...
+            'Directory `%s` not found!', matFiles);
+        end
+      end
     end
 end
 % not char!
